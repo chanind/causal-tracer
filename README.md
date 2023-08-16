@@ -1,5 +1,8 @@
 # Causal Tracer
 
+[![ci](https://img.shields.io/github/actions/workflow/status/chanind/causal-tracer/ci.yaml?branch=main)](https://github.com/chanind/causal-tracer)
+[![PyPI](https://img.shields.io/pypi/v/causal-tracer?color=blue)](https://pypi.org/project/causal-tracer/)
+
 Causal trace plots for transformer language models
 
 ![rome_knows_fact](https://github.com/chanind/causal-tracer/assets/200725/e621e179-ee87-48a7-9493-1a1ed422f036)
@@ -10,7 +13,9 @@ This library generates causal trace plots for transformer language models like L
 
 Causal tracing is a technique to find which activations at which layers are causally important for the model to generate any given output. The way this works is by scrambing subject tokens, then slowly replacing activations in the scrambled computation graph and observe if replacing an activation gets the model closer to its original answer.
 
-For instance, if we prompt a languge model with "Rome is located in the country of", it will output "Italy". If we want to understand how the model generated that answer, we can scramble the tokens for "Rome" by adding gaussian noise so the model now sees gibberish instead, like "@#(* is located in the country of". Of course, after this scrambling, there's no way for the model to output "Italy" since the subject is just noise. However, we can take this corrupted computation graph and start replacing activations in it with the original uncorrupted activations, and see if the model starts outputting "Italy" again. If it does, we know that activation is important to the computation!
+For instance, if we prompt a languge model with "Rome is located in the country of", it will output "Italy". If we want to understand how the model generated that answer, we can scramble the tokens for "Rome" by adding gaussian noise so the model now sees gibberish instead, like "@#(\* is located in the country of". Of course, after this scrambling, there's no way for the model to output "Italy" since the subject is just noise. However, we can take this corrupted computation graph and start replacing activations in it with the original uncorrupted activations, and see if the model starts outputting "Italy" again. If it does, we know that activation is important to the computation!
+
+For more info on causal tracing, check out the original ROME paper, [Locating and Editing Factual Associations in GPT](https://arxiv.org/pdf/2202.05262.pdf).
 
 ## Installation
 
@@ -67,13 +72,14 @@ attn_layer_flow = tracer.calculate_hidden_flow(
 )
 plot_hidden_flow_heatmap(attn_layer_flow)
 ```
- When generating MLP or attention causal traces, it's you should typically set a window size. In the ROME paper, this is set to 10, which means the MLP or attention traces are replaced as a group and their impact is averaged to make it easier to see the impact of smaller changes.
 
- ## Batching and sampling
+When generating MLP or attention causal traces, it's you should typically set a window size. In the ROME paper, this is set to 10, which means the MLP or attention traces are replaced as a group and their impact is averaged to make it easier to see the impact of smaller changes.
 
- By default, causal traces will be calculated by scrambling the subject tokens with 10 different noise samples, and will run in batches of size 32. You can improve the quality of the causal trace by increasing the number of samples higher. Also, if you run out of RAM during processing, you can try decreasing the batch size.
+## Batching and sampling
 
- ```python
+By default, causal traces will be calculated by scrambling the subject tokens with 10 different noise samples, and will run in batches of size 32. You can improve the quality of the causal trace by increasing the number of samples higher. Also, if you run out of RAM during processing, you can try decreasing the batch size.
+
+```python
 hidden_layer_flow = tracer.calculate_hidden_flow(
   "The Space Needle is located in the city of",
   subject="The Space Needle",
@@ -111,12 +117,9 @@ custom_layer_config = LayerConfig(
 )
 tracer = CausalTracer(model, tokenizer, layer_config=custom_layer_config)
 ```
+
 Note that `hidden_layers_matcher`, `attention_layers_matcher`, and `mlp_layers_matcher` are template strings, containg `{num}` in the middle. During processing, `{num}` will get replaced with the layer number. These strings correspond to the named modules of the transformer. You find all the named modules of a Pytorch model by running `model.named_modules()`.
 
 ## Contributing
 
 Contributions are welcome! If you submit code, please make sure to add or update tests coverage along with your change. This repo uses Black for code formatting, MyPy for type checking, and Flake8 for linting.
-
-
-
-

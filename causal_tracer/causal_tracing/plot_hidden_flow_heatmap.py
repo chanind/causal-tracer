@@ -27,7 +27,7 @@ def plot_hidden_flow_heatmap(
     color_map: dict[LayerKind, str] = {
         "hidden": "Purples",
         "mlp": "Greens",
-        "attn": "Reds",
+        "attention": "Reds",
     }
 
     with plt.rc_context(rc={"font.family": font_family}):

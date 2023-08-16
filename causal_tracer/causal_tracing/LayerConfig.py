@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any, cast
 
 from torch import nn
 
@@ -38,7 +39,7 @@ LLAMA_LAYER_CONFIG = LayerConfig(
 
 def get_layer_config(model: nn.Module) -> LayerConfig:
     if hasattr(model, "config"):
-        config = model.config
+        config = cast(Any, model.config)
         model_type: str = config.model_type
         if model_type == "gpt2":
             return GPT2_LAYER_CONFIG
