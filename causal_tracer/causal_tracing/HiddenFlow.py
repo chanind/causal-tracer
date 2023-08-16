@@ -4,7 +4,7 @@ from typing import Literal
 
 import torch
 
-LayerKind = Literal["hidden", "mlp", "attn"]
+LayerKind = Literal["hidden", "mlp", "attention"]
 
 
 @dataclass

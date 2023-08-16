@@ -6,7 +6,7 @@ import numpy as np
 import numpy.typing as npt
 from torch import nn
 
-from causal_tracer.causal_tracing.PseudoFuture import PseudoFuture
+from causal_tracer.lib.PseudoFuture import PseudoFuture
 from causal_tracer.lib.token_utils import make_inputs
 from causal_tracer.lib.TraceLayerDict import TraceLayerDict
 from causal_tracer.lib.torch_utils import untuple_tensor

@@ -13,7 +13,8 @@ def plot_hidden_flow_heatmap(
     xlabel: Optional[str] = None,
     modelname: Optional[str] = None,
     show: bool = True,
-    font_family: str = "Times New Roman",
+    font_family: str = "",
+    color: Optional[str] = None,
 ) -> plt.Figure:
     differences = result.scores
     low_score = result.low_score
@@ -33,7 +34,7 @@ def plot_hidden_flow_heatmap(
         fig, ax = plt.subplots(figsize=(3.5, 2), dpi=200)
         h = ax.pcolor(
             differences,
-            cmap=color_map[kind],
+            cmap=color or color_map[kind],
             vmin=low_score,
         )
         ax.invert_yaxis()

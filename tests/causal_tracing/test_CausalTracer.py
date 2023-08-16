@@ -2,7 +2,7 @@ import pytest
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 
-from causal_tracer.causal_tracing.CausalTracer import CausalTracer
+from causal_tracer import CausalTracer
 
 
 def test_CausalTracer_count_layers(
@@ -43,7 +43,9 @@ def test_CausalTracer_calculate_hidden_flow_mlp(
     model: GPT2LMHeadModel, tokenizer: GPT2TokenizerFast
 ) -> None:
     tracer = CausalTracer(model, tokenizer)
-    res = tracer.calculate_hidden_flow("Steve Jobs is the CEO of", kind="mlp")
+    res = tracer.calculate_hidden_flow(
+        "Steve Jobs is the CEO of", kind="mlp", window=10
+    )
     assert res.answer == " Apple"
     assert res.subject_range == (0, 2)
     assert res.high_score > res.low_score
@@ -64,6 +66,7 @@ def test_CausalTracer_calculate_hidden_flow_fills_in_skipped_layers_with_low_sco
     res = tracer.calculate_hidden_flow(
         "Steve Jobs is the CEO of",
         kind="mlp",
+        window=10,
         start_layer=3,
         end_layer=7,
         samples=10,
@@ -89,6 +92,7 @@ def test_CausalTracer_calculate_hidden_flow_fills_in_skipped_tokens_with_low_sco
         "I hear Steve Jobs is the CEO of",
         subject="Steve Jobs",
         kind="mlp",
+        window=10,
         samples=20,
         patch_subject_tokens_only=True,
     )
@@ -108,7 +112,10 @@ def test_CausalTracer_calculate_hidden_flow_mlp_long_subject(
 ) -> None:
     tracer = CausalTracer(model, tokenizer)
     res = tracer.calculate_hidden_flow(
-        "Hiroshima is located in the country of", subject="Hiroshima", kind="mlp"
+        "Hiroshima is located in the country of",
+        subject="Hiroshima",
+        kind="mlp",
+        window=10,
     )
     assert res.answer == " Japan"
     assert res.subject_range == (0, 4)
@@ -133,6 +140,7 @@ def test_CausalTracer_calculate_hidden_flows_mlp(
             "Hiroshima is located in the country of",
         ],
         kind="mlp",
+        window=10,
     )
     assert results[0].answer == " Apple"
     assert results[1].answer == " Microsoft"
@@ -157,6 +165,7 @@ def test_CausalTracer_calculate_hidden_flows_small_batch_size(
             "Hiroshima is located in the country of",
         ],
         kind="mlp",
+        window=10,
         batch_size=3,
     )
     assert results[0].answer == " Apple"
@@ -182,6 +191,7 @@ def test_CausalTracer_calculate_hidden_flows_hidden(
             "Hiroshima is located in the country of",
         ],
         kind="hidden",
+        window=1,
     )
     assert results[0].answer == " Apple"
     assert results[1].answer == " Microsoft"

@@ -10,12 +10,12 @@ from tokenizers import Tokenizer
 from causal_tracer.causal_tracing.AsyncTracePatchProcessor import (
     AsyncTracePatchProcessor,
 )
-from causal_tracer.causal_tracing.PseudoFuture import PseudoFuture
+from causal_tracer.causal_tracing.LayerConfig import LayerConfig, get_layer_config
+from causal_tracer.lib.PseudoFuture import PseudoFuture
 from causal_tracer.causal_tracing.guess_subject import guess_subject
 from causal_tracer.causal_tracing.pick_noise_level import pick_noise_level
 from causal_tracer.lib.TraceLayerDict import TraceLayerDict
 from causal_tracer.lib.layer_matching import (
-    LayerMatcher,
     collect_matching_layers,
     get_layer_name,
 )
@@ -50,10 +50,7 @@ class HiddenFlowQuery:
 class CausalTracer:
     model: nn.Module
     tokenizer: Tokenizer
-    embed_layername: str
-    hidden_layers_matcher: LayerMatcher
-    mlp_layers_matcher: LayerMatcher
-    attn_layers_matcher: LayerMatcher
+    layer_config: LayerConfig
     noise: float
     device: torch.device
     noise_calculation_subjects: Optional[list[str]]
@@ -62,10 +59,7 @@ class CausalTracer:
         self,
         model: nn.Module,
         tokenizer: Tokenizer,
-        embed_layername: str = "transformer.wte",
-        hidden_layers_matcher: LayerMatcher = "transformer.h.{num}",
-        mlp_layers_matcher: LayerMatcher = "transformer.h.{num}.mlp",
-        attn_layers_matcher: LayerMatcher = "transformer.h.{num}.attn",
+        layer_config: Optional[LayerConfig] = None,
         noise: Optional[float] = None,
         noise_calculation_subjects: Optional[list[str]] = None,
         device: torch.device = DEFAULT_DEVICE,
@@ -73,24 +67,31 @@ class CausalTracer:
         model.eval()
         self.model = model
         self.tokenizer = tokenizer
-        self.embed_layername = embed_layername
-        self.hidden_layers_matcher = hidden_layers_matcher
-        self.mlp_layers_matcher = mlp_layers_matcher
-        self.attn_layers_matcher = attn_layers_matcher
-        self.noise = noise or pick_noise_level(model, embed_layername)
+        if layer_config is None:
+            layer_config = get_layer_config(model)
+        self.layer_config = layer_config
+        self.noise = noise or pick_noise_level(model, self.layer_config.embedding_layer)
         self.device = device
         self.noise_calculation_subjects = noise_calculation_subjects
 
     def count_layers(self) -> int:
-        return len(collect_matching_layers(self.model, self.hidden_layers_matcher))
+        return len(
+            collect_matching_layers(self.model, self.layer_config.hidden_layers_matcher)
+        )
 
     def get_layer_name(self, layer_num: int, layer_kind: LayerKind) -> str:
         if layer_kind == "hidden":
-            return get_layer_name(self.model, self.hidden_layers_matcher, layer_num)
+            return get_layer_name(
+                self.model, self.layer_config.hidden_layers_matcher, layer_num
+            )
         if layer_kind == "mlp":
-            return get_layer_name(self.model, self.mlp_layers_matcher, layer_num)
-        if layer_kind == "attn":
-            return get_layer_name(self.model, self.attn_layers_matcher, layer_num)
+            return get_layer_name(
+                self.model, self.layer_config.mlp_layers_matcher, layer_num
+            )
+        if layer_kind == "attention":
+            return get_layer_name(
+                self.model, self.layer_config.attention_layers_matcher, layer_num
+            )
         raise ValueError(f"Unknown layer kind {layer_kind}")
 
     def get_layer_names_of_kind(self, layer_kind: LayerKind) -> list[str]:
@@ -115,7 +116,7 @@ class CausalTracer:
     ) -> list[list[PseudoFuture[torch.Tensor]]]:
         """
         This appears to restore multiple layers at once, in a window around the layer of interest.
-        This seems to only be used for the hidden layer kind, not the mlp or attn layer kinds.
+        This seems to only be used for the mlp or attention layers, never hidden layer.
 
         In the ROME colab, it says the following:
 
@@ -145,42 +146,14 @@ class CausalTracer:
             table.append(row)
         return table
 
-    def trace_important_states(
-        self,
-        prompt: str,
-        uncorrupted_layer_outputs: dict[str, torch.Tensor],
-        subject_range: tuple[int, int],
-        answer_token_id: torch.Tensor,
-        ntoks: int,
-        trace_patch_processor: AsyncTracePatchProcessor,
-        start_layer: int = 0,
-        end_layer: Optional[int] = None,
-        token_range: Optional[tuple[int, int]] = None,
-    ) -> list[list[PseudoFuture[torch.Tensor]]]:
-        num_layers = self.count_layers()
-        table: list[list[PseudoFuture[torch.Tensor]]] = []
-        for tnum in range(*(token_range or (0, ntoks))):
-            row = []
-            for layer in range(start_layer, end_layer or num_layers):
-                res_future = trace_patch_processor.trace_with_patch(
-                    prompt,
-                    states_to_patch=[(tnum, self.get_layer_name(layer, "hidden"))],
-                    uncorrupted_layer_outputs=uncorrupted_layer_outputs,
-                    answer_token_id=answer_token_id,
-                    subject_range=subject_range,
-                )
-                row.append(res_future)
-            table.append(row)
-        return table
-
     def calculate_hidden_flow(
         self,
         prompt: str,
         subject: Optional[str] = None,
+        kind: LayerKind = "hidden",
         answer_id_override: Optional[int] = None,
         samples: int = 10,
-        window: int = 10,
-        kind: LayerKind = "hidden",
+        window: int = 1,
         patch_seed: int = 1,
         batch_size: int = 32,
         start_layer: int = 0,
@@ -279,7 +252,7 @@ class CausalTracer:
         self,
         queries: list[str | HiddenFlowQuery],
         samples: int = 10,
-        window: int = 10,
+        window: int = 1,
         kind: LayerKind = "hidden",
         patch_seed: int = 1,
         batch_size: int = 32,
@@ -302,7 +275,7 @@ class CausalTracer:
         trace_patch_processor = AsyncTracePatchProcessor(
             self.model,
             self.tokenizer,
-            self.embed_layername,
+            self.layer_config.embedding_layer,
             self.noise,
             samples_per_patch=samples,
             batch_size=batch_size,
@@ -333,36 +306,23 @@ class CausalTracer:
                 answer_token_id=answer_token_id,
                 subject_range=subject_range,
             )
-            if kind == "hidden":
-                differences_futures = self.trace_important_states(
-                    prompt,
-                    uncorrupted_layer_outputs[index],
-                    subject_range,
-                    answer_token_id,
-                    ntoks=ntoks[index],
-                    trace_patch_processor=trace_patch_processor,
-                    start_layer=start_layer,
-                    end_layer=end_layer,
-                    token_range=token_range,
-                )
-            else:
-                differences_futures = self.trace_important_window(
-                    prompt,
-                    uncorrupted_layer_outputs[index],
-                    subject_range,
-                    answer_token_id,
-                    window=window,
-                    kind=kind,
-                    trace_patch_processor=trace_patch_processor,
-                    ntoks=ntoks[index],
-                    start_layer=start_layer,
-                    end_layer=end_layer,
-                    token_range=token_range,
-                )
+            differences_futures = self.trace_important_window(
+                prompt,
+                uncorrupted_layer_outputs[index],
+                subject_range,
+                answer_token_id,
+                window=window,
+                kind=kind,
+                trace_patch_processor=trace_patch_processor,
+                ntoks=ntoks[index],
+                start_layer=start_layer,
+                end_layer=end_layer,
+                token_range=token_range,
+            )
             # need to call this to resolve all the patch trace outputs
             trace_patch_processor.process()
             low_score = low_score_future.result.item()
-            differences = self.calculate_differences(
+            differences = self._calculate_differences(
                 differences_futures,
                 low_score,
                 start_layer=start_layer,
@@ -389,7 +349,7 @@ class CausalTracer:
             )
         return hidden_flows
 
-    def calculate_differences(
+    def _calculate_differences(
         self,
         differences_futures: list[list[PseudoFuture[torch.Tensor]]],
         low_score: float,
