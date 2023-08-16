@@ -53,7 +53,6 @@ class CausalTracer:
     layer_config: LayerConfig
     noise: float
     device: torch.device
-    noise_calculation_subjects: Optional[list[str]]
 
     def __init__(
         self,
@@ -61,7 +60,6 @@ class CausalTracer:
         tokenizer: Tokenizer,
         layer_config: Optional[LayerConfig] = None,
         noise: Optional[float] = None,
-        noise_calculation_subjects: Optional[list[str]] = None,
         device: torch.device = DEFAULT_DEVICE,
     ) -> None:
         model.eval()
@@ -72,7 +70,6 @@ class CausalTracer:
         self.layer_config = layer_config
         self.noise = noise or pick_noise_level(model, self.layer_config.embedding_layer)
         self.device = device
-        self.noise_calculation_subjects = noise_calculation_subjects
 
     def count_layers(self) -> int:
         return len(
