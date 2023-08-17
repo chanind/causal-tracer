@@ -2,6 +2,25 @@
 
 
 
+## v1.0.0 (2023-08-17)
+
+### Breaking
+
+* feat: cleanup for 1.0
+
+BREAKING CHANGE: 1.0 release ([`56aed10`](https://github.com/chanind/causal-tracer/commit/56aed10eacc96ba78c156e07db096a6bf0717ee6))
+
+### Chore
+
+* chore: skip poetry caching, since flake8 is freaking out ([`2c85b13`](https://github.com/chanind/causal-tracer/commit/2c85b13b211f40e544762bbd619745171c118d98))
+
+* chore: updating poetry lock ([`3009519`](https://github.com/chanind/causal-tracer/commit/300951985fb02d9579e9fc1816eb9b84d7f72a96))
+
+### Feature
+
+* feat: simplifying plot_hidden_flow_heatmap labels ([`922b77b`](https://github.com/chanind/causal-tracer/commit/922b77b8d7a31b8b0664fbf9005984522069a0f7))
+
+
 ## v0.1.2 (2023-08-17)
 
 ### Fix

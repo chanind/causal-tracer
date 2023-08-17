@@ -1,4 +1,4 @@
-__version__ = "0.1.2"
+__version__ = "1.0.0"
 
 from causal_tracer.causal_tracing.CausalTracer import CausalTracer, HiddenFlowQuery
 from causal_tracer.causal_tracing.HiddenFlow import HiddenFlow
