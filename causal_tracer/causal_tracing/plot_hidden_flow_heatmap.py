@@ -11,7 +11,6 @@ def plot_hidden_flow_heatmap(
     savepdf: Optional[str] = None,
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
-    modelname: Optional[str] = None,
     show: bool = True,
     font_family: str = "",
     color: Optional[str] = None,
@@ -42,15 +41,9 @@ def plot_hidden_flow_heatmap(
         ax.set_xticks([0.5 + i for i in range(0, differences.shape[1] - 6, 5)])
         ax.set_xticklabels(list(range(0, differences.shape[1] - 6, 5)))
         ax.set_yticklabels(labels)
-        if not modelname:
-            modelname = "GPT"
-        if kind == "hidden":
-            ax.set_title("Impact of restoring state after corrupted input")
-            ax.set_xlabel(f"single restored layer within {modelname}")
-        else:
-            kindname = kind
-            ax.set_title(f"Impact of restoring {kindname} after corrupted input")
-            ax.set_xlabel(f"center of interval of restored {kindname} layers")
+        kindname = kind
+        ax.set_title(f"Impact of restoring {kindname} after corrupted input")
+        ax.set_xlabel(f"center of interval of restored {kindname} layers")
         cb = plt.colorbar(h)
         if title is not None:
             ax.set_title(title)
