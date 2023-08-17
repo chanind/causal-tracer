@@ -2,6 +2,13 @@
 
 
 
+## v0.1.2 (2023-08-17)
+
+### Fix
+
+* fix: updating semantic release config for v8 ([`f3d4dd1`](https://github.com/chanind/causal-tracer/commit/f3d4dd190ad11903cceec5afad6a7ebfe323f6cb))
+
+
 ## v0.1.1 (2023-08-17)
 
 ### Fix
