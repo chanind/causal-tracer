@@ -1,6 +1,7 @@
 # Causal Tracer
 
 [![ci](https://img.shields.io/github/actions/workflow/status/chanind/causal-tracer/ci.yaml?branch=main)](https://github.com/chanind/causal-tracer)
+[![Codecov](https://img.shields.io/codecov/c/github/chanind/causal-tracer/main)](https://codecov.io/gh/chanind/causal-tracer)
 [![PyPI](https://img.shields.io/pypi/v/causal-tracer?color=blue)](https://pypi.org/project/causal-tracer/)
 
 Causal trace plots for transformer language models.
