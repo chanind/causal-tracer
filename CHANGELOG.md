@@ -2,6 +2,13 @@
 
 
 
+## v0.1.1 (2023-08-17)
+
+### Fix
+
+* fix: adding environment info to pypi release ([`4f8984f`](https://github.com/chanind/causal-tracer/commit/4f8984f487224026dbab84de7d6b12e85c6b04f9))
+
+
 ## v0.1.0 (2023-08-17)
 
 ### Chore
