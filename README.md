@@ -32,11 +32,11 @@ pip install causal-tracer
 If you're generating causal traces for a Llama-based model or GPT2, you don't need any further configuration.
 
 ```python
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from causal_tracer import CausalTracer, plot_hidden_flow_heatmap
 
-model = AutoModel.from_pretrained("gpt2-medium")
-tokenizer = AutoTokenizer.from-pretrained("gpt2-medium")
+model = AutoModelForCausalLM.from_pretrained("gpt2-medium")
+tokenizer = AutoTokenizer.from_pretrained("gpt2-medium")
 tracer = CausalTracer(model, tokenizer)
 
 # perform causal tracing across hidden layers (residual stream) of the model
@@ -51,11 +51,11 @@ plot_hidden_flow_heatmap(hidden_layer_flow)
 You can also generate causal traces of MLP layers or attention layers in the transformer.
 
 ```python
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from causal_tracer import CausalTracer, plot_hidden_flow_heatmap
 
-model = AutoModel.from_pretrained("gpt2-medium")
-tokenizer = AutoTokenizer.from-pretrained("gpt2-medium")
+model = AutoModelForCausalLM.from_pretrained("gpt2-medium")
+tokenizer = AutoTokenizer.from_pretrained("gpt2-medium")
 tracer = CausalTracer(model, tokenizer)
 
 # perform causal tracing across MLP layers of the model
