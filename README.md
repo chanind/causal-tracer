@@ -124,6 +124,25 @@ tracer = CausalTracer(model, tokenizer, layer_config=custom_layer_config)
 
 Note that `hidden_layers_matcher`, `attention_layers_matcher`, and `mlp_layers_matcher` are template strings, containg `{num}` in the middle. During processing, `{num}` will get replaced with the layer number. These strings correspond to the named modules of the transformer. You find all the named modules of a Pytorch model by running `model.named_modules()`.
 
+## Using hidden flow results directly
+
+If you want to use the results of the `tracer.calculate_hidden_flow()` method in downstream tasks instead of just making a plot, the returned `HiddenFlow` object contains a number of fields which can be further analyzed. The full `HiddenFlow` dataclass types are below:
+
+```python
+class HiddenFlow:
+    scores: torch.Tensor
+    low_score: float
+    high_score: float
+    input_ids: torch.Tensor
+    input_tokens: list[str]
+    subject_range: tuple[int, int]
+    answer: str
+    kind: LayerKind # one of "hidden", "attention", or "mlp"
+    layer_outputs: OrderedDict[str, torch.Tensor]
+```
+
+Of particular interest, the `score` attribute contains the full matrix of causal tracing scores. The `layer_outputs` attribute contains the uncorrupted layer activations for each layer of the type being analyzed.
+
 ## Contributing
 
 Contributions are welcome! If you submit code, please make sure to add or update tests coverage along with your change. This repo uses Black for code formatting, MyPy for type checking, and Flake8 for linting.
