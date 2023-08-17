@@ -19,7 +19,12 @@ jobs:
       - name: mypy type checking
         run: poetry run mypy .
       - name: pytest
-        run: poetry run pytest
+        run: poetry run pytest --cov=./ --cov-report=xml
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: true
       - name: build
         run: poetry build
 

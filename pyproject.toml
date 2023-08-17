@@ -21,6 +21,7 @@ torch = "2.0.0"
 flake8 = "^6.0.0"
 syrupy = "^4.0.8"
 sentencepiece = "^0.1.99"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
