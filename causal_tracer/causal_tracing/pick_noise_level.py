@@ -6,7 +6,7 @@ from causal_tracer.lib.torch_utils import get_module
 
 def pick_noise_level(
     model: nn.Module,
-    embedding_layer: str = "transformer.wte",
+    embedding_layer: str,
     std_multiplier: float = 3,
 ) -> float:
     """

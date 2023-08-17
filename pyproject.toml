@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "causal_tracer"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 transformers = "^4.28.1"
 matplotlib = "^3.7.1"
 tqdm = "^4.66.1"

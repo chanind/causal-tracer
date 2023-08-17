@@ -3,7 +3,10 @@
 [![ci](https://img.shields.io/github/actions/workflow/status/chanind/causal-tracer/ci.yaml?branch=main)](https://github.com/chanind/causal-tracer)
 [![PyPI](https://img.shields.io/pypi/v/causal-tracer?color=blue)](https://pypi.org/project/causal-tracer/)
 
-Causal trace plots for transformer language models
+Causal trace plots for transformer language models.
+
+Demo:
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1rOA_r7Gv6bGjXNfUvrqk9Gt3dLwZNvGJ?usp=sharing)
 
 ![rome_knows_fact](https://github.com/chanind/causal-tracer/assets/200725/e621e179-ee87-48a7-9493-1a1ed422f036)
 
