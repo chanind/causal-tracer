@@ -1,3 +1,5 @@
+__version__ = "0.1.0"
+
 from causal_tracer.causal_tracing.CausalTracer import CausalTracer
 from causal_tracer.causal_tracing.plot_hidden_flow_heatmap import (
     plot_hidden_flow_heatmap,
