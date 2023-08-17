@@ -15,21 +15,6 @@ def get_module(model: nn.Module, name: str) -> nn.Module:
     raise LookupError(name)
 
 
-def set_requires_grad(requires_grad: bool, *models: nn.Module) -> None:
-    """
-    Sets requires_grad true or false for all parameters within the
-    models passed.
-    """
-    for model in models:
-        if isinstance(model, nn.Module):
-            for param in model.parameters():
-                param.requires_grad = requires_grad
-        elif isinstance(model, (nn.Parameter, torch.Tensor)):
-            model.requires_grad = requires_grad
-        else:
-            raise TypeError(f"unknown type {type(model)}")
-
-
 def untuple_tensor(x: torch.Tensor | tuple[torch.Tensor, ...]) -> torch.Tensor:
     return x[0] if isinstance(x, tuple) else x
 

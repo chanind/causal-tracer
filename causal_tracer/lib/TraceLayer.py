@@ -2,10 +2,6 @@
 Utilities for instrumenting a torch model.
 
 Trace will hook one layer at a time.
-TraceDict will hook multiple layers at once.
-subsequence slices intervals from Sequential modules.
-get_module, replace_module, get_parameter resolve dotted names.
-set_requires_grad recursively sets requires_grad in module parameters.
 
 Copied from https://github.com/kmeng01/rome/blob/main/util/nethook.py
 """
