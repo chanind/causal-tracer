@@ -2,6 +2,27 @@
 
 
 
+## v1.0.1 (2024-04-02)
+
+### Chore
+
+* chore: fixing typos in README ([`5eff2c4`](https://github.com/chanind/causal-tracer/commit/5eff2c49447b7382acca618b8f7076ff4c9e8b54))
+
+* chore: adding to README ([`6e0e8c7`](https://github.com/chanind/causal-tracer/commit/6e0e8c7bb1eb9f284b74e6a4d1195ee99b32be0f))
+
+* chore: adding codecov badge to README ([`7f2c73f`](https://github.com/chanind/causal-tracer/commit/7f2c73fd21e0cb16bcb63f735312d83950dab930))
+
+* chore: don&#39;t show image during tests, since it actually pops up ([`3d576da`](https://github.com/chanind/causal-tracer/commit/3d576daa2cff3dfe6dc450b334e4790995716c20))
+
+* chore: adding a basic test on the plot function ([`2ab8e82`](https://github.com/chanind/causal-tracer/commit/2ab8e820f360e05e4b158654b2daab8e3822f8d1))
+
+* chore: adding codecov ([`11600e2`](https://github.com/chanind/causal-tracer/commit/11600e264948e33ea7ee1377b23a680e8399650f))
+
+### Fix
+
+* fix: add repository info to pyproject.toml for PyPI ([`e5b1d1a`](https://github.com/chanind/causal-tracer/commit/e5b1d1ab6a0df6c66061af6105618ad62906df62))
+
+
 ## v1.0.0 (2023-08-17)
 
 ### Breaking
