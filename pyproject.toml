@@ -5,6 +5,7 @@ description = ""
 authors = ["David Chanin <chanindav@gmail.com>"]
 readme = "README.md"
 packages = [{include = "causal_tracer"}]
+repository = "https://github.com/chanind/causal-tracer"
 
 [tool.poetry.dependencies]
 python = "^3.10"
