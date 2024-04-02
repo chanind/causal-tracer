@@ -1,3 +1,4 @@
+from math import ceil
 from typing import Optional
 import os
 
@@ -14,6 +15,8 @@ def plot_hidden_flow_heatmap(
     show: bool = True,
     font_family: str = "",
     color: Optional[str] = None,
+    tick_interval: int = 5,
+    skip_final_labels_portion: float = 0.1,
 ) -> plt.Figure:
     differences = result.scores
     low_score = result.low_score
@@ -35,11 +38,14 @@ def plot_hidden_flow_heatmap(
             differences,
             cmap=color or color_map[kind],
             vmin=low_score,
+            edgecolors="#00000010",
         )
+        layers = differences.shape[1]
+        skip_labels = ceil(layers * skip_final_labels_portion)
         ax.invert_yaxis()
         ax.set_yticks([0.5 + i for i in range(len(differences))])
-        ax.set_xticks([0.5 + i for i in range(0, differences.shape[1] - 6, 5)])
-        ax.set_xticklabels(list(range(0, differences.shape[1] - 6, 5)))
+        ax.set_xticks([0.5 + i for i in range(0, layers - skip_labels, tick_interval)])
+        ax.set_xticklabels(list(range(0, layers - skip_labels, tick_interval)))
         ax.set_yticklabels(labels)
         kindname = kind
         ax.set_title(f"Impact of restoring {kindname} after corrupted input")
