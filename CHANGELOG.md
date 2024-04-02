@@ -2,6 +2,17 @@
 
 
 
+## v1.1.0 (2024-04-02)
+
+### Chore
+
+* chore: updating codecov action ([`ae7cc89`](https://github.com/chanind/causal-tracer/commit/ae7cc8930e37d5c11a5dc9cd6583ca096064ad4f))
+
+### Feature
+
+* feat: adding more options to causal tracing plots ([`bc9650a`](https://github.com/chanind/causal-tracer/commit/bc9650a8a09d82ef571cdd1f55479c039000743f))
+
+
 ## v1.0.1 (2024-04-02)
 
 ### Chore
